@@ -17,11 +17,19 @@ const PORT = parseInt(process.env.PORT || process.env.GATEWAY_PORT || 3000, 10);
  * Service Discovery Registry (Configuration-Based)
  * Dynamic service URLs populated from environment variables
  */
+function normalizeUrl(rawUrl, defaultUrl) {
+  let u = (rawUrl || defaultUrl).trim().replace(/\/+$/, '');
+  if (!/^https?:\/\//i.test(u)) {
+    u = 'https://' + u;
+  }
+  return u;
+}
+
 function getServiceRegistry() {
   return {
-    userService: (process.env.USER_SERVICE_URL || 'http://localhost:3001').replace(/\/+$/, ''),
-    productService: (process.env.PRODUCT_SERVICE_URL || 'http://localhost:3002').replace(/\/+$/, ''),
-    orderService: (process.env.ORDER_SERVICE_URL || 'http://localhost:3003').replace(/\/+$/, '')
+    userService: normalizeUrl(process.env.USER_SERVICE_URL, 'http://localhost:3001'),
+    productService: normalizeUrl(process.env.PRODUCT_SERVICE_URL, 'http://localhost:3002'),
+    orderService: normalizeUrl(process.env.ORDER_SERVICE_URL, 'http://localhost:3003')
   };
 }
 

@@ -17,9 +17,17 @@ try { require('dotenv').config(); } catch (e) {}
 const http = require('http');
 const url = require('url');
 
+function normalizeUrl(rawUrl, defaultUrl) {
+  let u = (rawUrl || defaultUrl).trim().replace(/\/+$/, '');
+  if (!/^https?:\/\//i.test(u)) {
+    u = 'https://' + u;
+  }
+  return u;
+}
+
 const PORT               = parseInt(process.env.ORDER_SERVICE_PORT    || process.env.PORT || 3003, 10);
-const USER_SERVICE_URL   = (process.env.USER_SERVICE_URL    || 'http://localhost:3001').replace(/\/+$/, '');
-const PRODUCT_SERVICE_URL = (process.env.PRODUCT_SERVICE_URL || 'http://localhost:3002').replace(/\/+$/, '');
+const USER_SERVICE_URL   = normalizeUrl(process.env.USER_SERVICE_URL, 'http://localhost:3001');
+const PRODUCT_SERVICE_URL = normalizeUrl(process.env.PRODUCT_SERVICE_URL, 'http://localhost:3002');
 const TIMEOUT_MS         = parseInt(process.env.INTER_SERVICE_TIMEOUT_MS || 3000, 10);
 
 // In-Memory order store (Database-per-service)

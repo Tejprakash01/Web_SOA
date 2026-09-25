@@ -1,7 +1,5 @@
 # Render Blueprint (render.yaml) for CampusConnect API Gateway & Microservices System
 # Web Services & SOA - Lab 7 Deployment Blueprint
-#
-# Note: Render Free Tier requires `type: web` for Web Services.
 
 services:
   # ----------------------------------------------------
@@ -21,17 +19,17 @@ services:
         fromService:
           type: web
           name: user-service
-          property: url
+          property: host
       - key: PRODUCT_SERVICE_URL
         fromService:
           type: web
           name: product-service
-          property: url
+          property: host
       - key: ORDER_SERVICE_URL
         fromService:
           type: web
           name: order-service
-          property: url
+          property: host
 
   # ----------------------------------------------------
   # 2. USER SERVICE (Microservice)
@@ -78,12 +76,13 @@ services:
         fromService:
           type: web
           name: user-service
-          property: url
+          property: host
       - key: PRODUCT_SERVICE_URL
         fromService:
           type: web
           name: product-service
-          property: url
+          property: host
       - key: INTER_SERVICE_TIMEOUT_MS
         value: 5000
+
 
