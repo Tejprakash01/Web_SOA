@@ -1,0 +1,95 @@
+# Render Blueprint (render.yaml) for CampusConnect API Gateway & Microservices System
+# Web Services & SOA - Lab 7 Deployment Blueprint
+#
+# Architecture on Render:
+#  - API Gateway: Exposed as a Public Web Service (`type: web`). Public URL: https://api-gateway-lab7.onrender.com
+#  - User Service: Deployed as a Private Service (`type: pserv`). Accessible only via Render internal mesh network.
+#  - Product Service: Deployed as a Private Service (`type: pserv`). Accessible only via Render internal mesh network.
+#  - Order Service: Deployed as a Private Service (`type: pserv`). Accessible only via Render internal mesh network.
+
+services:
+  # ----------------------------------------------------
+  # 1. API GATEWAY (Public Facing Entry Point)
+  # ----------------------------------------------------
+  - type: web
+    name: api-gateway
+    env: docker
+    dockerContext: ./api-gateway
+    dockerfilePath: ./api-gateway/Dockerfile
+    plan: free
+    region: singapore # Change to your preferred region (e.g., frankfurt, oregon, ohio)
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: USER_SERVICE_URL
+        fromService:
+          type: pserv
+          name: user-service
+          property: hostport
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: pserv
+          name: product-service
+          property: hostport
+      - key: ORDER_SERVICE_URL
+        fromService:
+          type: pserv
+          name: order-service
+          property: hostport
+
+  # ----------------------------------------------------
+  # 2. USER SERVICE (Internal Microservice)
+  # ----------------------------------------------------
+  - type: pserv
+    name: user-service
+    env: docker
+    dockerContext: ./user-service
+    dockerfilePath: ./user-service/Dockerfile
+    plan: free
+    envVars:
+      - key: USER_SERVICE_PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false # Set in Render Dashboard or MongoDB Atlas connection string
+
+  # ----------------------------------------------------
+  # 3. PRODUCT SERVICE (Internal Microservice)
+  # ----------------------------------------------------
+  - type: pserv
+    name: product-service
+    env: docker
+    dockerContext: ./product-service
+    dockerfilePath: ./product-service/Dockerfile
+    plan: free
+    envVars:
+      - key: PRODUCT_SERVICE_PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
+
+  # ----------------------------------------------------
+  # 4. ORDER SERVICE (Internal Microservice)
+  # ----------------------------------------------------
+  - type: pserv
+    name: order-service
+    env: docker
+    dockerContext: ./order-service
+    dockerfilePath: ./order-service/Dockerfile
+    plan: free
+    envVars:
+      - key: ORDER_SERVICE_PORT
+        value: 10000
+      - key: USER_SERVICE_URL
+        fromService:
+          type: pserv
+          name: user-service
+          property: hostport
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: pserv
+          name: product-service
+          property: hostport
+      - key: INTER_SERVICE_TIMEOUT_MS
+        value: 5000
+      - key: MONGO_URI
+        sync: false
