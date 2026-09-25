@@ -1,11 +1,7 @@
 # Render Blueprint (render.yaml) for CampusConnect API Gateway & Microservices System
 # Web Services & SOA - Lab 7 Deployment Blueprint
 #
-# Architecture on Render:
-#  - API Gateway: Exposed as a Public Web Service (`type: web`). Public URL: https://api-gateway-lab7.onrender.com
-#  - User Service: Deployed as a Private Service (`type: pserv`). Accessible only via Render internal mesh network.
-#  - Product Service: Deployed as a Private Service (`type: pserv`). Accessible only via Render internal mesh network.
-#  - Order Service: Deployed as a Private Service (`type: pserv`). Accessible only via Render internal mesh network.
+# Note: Render Free Tier requires `type: web` for Web Services.
 
 services:
   # ----------------------------------------------------
@@ -17,79 +13,77 @@ services:
     dockerContext: ./api-gateway
     dockerfilePath: ./api-gateway/Dockerfile
     plan: free
-    region: singapore # Change to your preferred region (e.g., frankfurt, oregon, ohio)
+    region: singapore
     envVars:
       - key: PORT
         value: 10000
       - key: USER_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: user-service
-          property: hostport
+          property: url
       - key: PRODUCT_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: product-service
-          property: hostport
+          property: url
       - key: ORDER_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: order-service
-          property: hostport
+          property: url
 
   # ----------------------------------------------------
-  # 2. USER SERVICE (Internal Microservice)
+  # 2. USER SERVICE (Microservice)
   # ----------------------------------------------------
-  - type: pserv
+  - type: web
     name: user-service
     env: docker
     dockerContext: ./user-service
     dockerfilePath: ./user-service/Dockerfile
     plan: free
+    region: singapore
     envVars:
       - key: USER_SERVICE_PORT
         value: 10000
-      - key: MONGO_URI
-        sync: false # Set in Render Dashboard or MongoDB Atlas connection string
 
   # ----------------------------------------------------
-  # 3. PRODUCT SERVICE (Internal Microservice)
+  # 3. PRODUCT SERVICE (Microservice)
   # ----------------------------------------------------
-  - type: pserv
+  - type: web
     name: product-service
     env: docker
     dockerContext: ./product-service
     dockerfilePath: ./product-service/Dockerfile
     plan: free
+    region: singapore
     envVars:
       - key: PRODUCT_SERVICE_PORT
         value: 10000
-      - key: MONGO_URI
-        sync: false
 
   # ----------------------------------------------------
-  # 4. ORDER SERVICE (Internal Microservice)
+  # 4. ORDER SERVICE (Microservice)
   # ----------------------------------------------------
-  - type: pserv
+  - type: web
     name: order-service
     env: docker
     dockerContext: ./order-service
     dockerfilePath: ./order-service/Dockerfile
     plan: free
+    region: singapore
     envVars:
       - key: ORDER_SERVICE_PORT
         value: 10000
       - key: USER_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: user-service
-          property: hostport
+          property: url
       - key: PRODUCT_SERVICE_URL
         fromService:
-          type: pserv
+          type: web
           name: product-service
-          property: hostport
+          property: url
       - key: INTER_SERVICE_TIMEOUT_MS
         value: 5000
-      - key: MONGO_URI
-        sync: false
+
