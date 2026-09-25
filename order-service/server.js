@@ -22,6 +22,9 @@ function normalizeUrl(rawUrl, defaultUrl) {
   if (!/^https?:\/\//i.test(u)) {
     u = 'https://' + u;
   }
+  if (!u.includes('.') && !u.includes('localhost') && !u.includes('127.0.0.1')) {
+    u = u + '.onrender.com';
+  }
   return u;
 }
 

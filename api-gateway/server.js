@@ -5,7 +5,7 @@
  * Zero-dependency mode: Uses Node.js native http/https modules for maximum performance and portability.
  */
 
-try { require('dotenv').config(); } catch (e) {}
+try { require('dotenv').config(); } catch (e) { }
 
 const http = require('http');
 const https = require('https');
