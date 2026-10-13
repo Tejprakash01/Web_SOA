@@ -5,8 +5,12 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+<<<<<<< HEAD
     "dev": "node server.js",
     "test": "node --check server.js metrics.js && echo 'Tests passed'"
+=======
+    "dev": "node server.js"
+>>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
   },
   "dependencies": {
     "cors": "^2.8.5",
