@@ -20,25 +20,16 @@ const url = require('url');
 function normalizeUrl(rawUrl, defaultUrl) {
   let u = (rawUrl || defaultUrl).trim().replace(/\/+$/, '');
   if (!/^https?:\/\//i.test(u)) {
-<<<<<<< HEAD
     u = 'http://' + u;
   }
   if (process.env.RENDER && !u.includes('.') && !u.includes('localhost') && !u.includes('127.0.0.1')) {
-=======
-    u = 'https://' + u;
-  }
-  if (!u.includes('.') && !u.includes('localhost') && !u.includes('127.0.0.1')) {
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
     u = u + '.onrender.com';
   }
   return u;
 }
 
 const PORT               = parseInt(process.env.ORDER_SERVICE_PORT    || process.env.PORT || 3003, 10);
-<<<<<<< HEAD
 const { recordRequest, getMetrics } = require('./metrics');
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
 const USER_SERVICE_URL   = normalizeUrl(process.env.USER_SERVICE_URL, 'http://localhost:3001');
 const PRODUCT_SERVICE_URL = normalizeUrl(process.env.PRODUCT_SERVICE_URL, 'http://localhost:3002');
 const TIMEOUT_MS         = parseInt(process.env.INTER_SERVICE_TIMEOUT_MS || 3000, 10);
@@ -102,7 +93,6 @@ const server = http.createServer(async (req, res) => {
 
   console.log(`[Order Service] ${m} ${p}`);
 
-<<<<<<< HEAD
   if (p === '/health' && m === 'GET') {
     recordRequest('GET', '/health', 200, 1);
     return sendJSON(res, 200, { status: 'healthy', service: 'order-service', port: PORT, dependencies: { userServiceUrl: USER_SERVICE_URL, productServiceUrl: PRODUCT_SERVICE_URL, timeoutMs: TIMEOUT_MS }, timestamp: new Date().toISOString() });
@@ -118,13 +108,6 @@ const server = http.createServer(async (req, res) => {
     recordRequest('GET', '/orders', 200, 1);
     return sendJSON(res, 200, orders);
   }
-=======
-  if (p === '/health' && m === 'GET')
-    return sendJSON(res, 200, { status: 'healthy', service: 'order-service', port: PORT, dependencies: { userServiceUrl: USER_SERVICE_URL, productServiceUrl: PRODUCT_SERVICE_URL, timeoutMs: TIMEOUT_MS }, timestamp: new Date().toISOString() });
-
-  if (p === '/orders' && m === 'GET')
-    return sendJSON(res, 200, orders);
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
 
   const orderMatch = p.match(/^\/orders\/(\d+)$/);
   if (orderMatch && m === 'GET') {

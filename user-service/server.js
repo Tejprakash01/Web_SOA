@@ -10,10 +10,7 @@ const http = require('http');
 const url = require('url');
 
 const PORT = parseInt(process.env.USER_SERVICE_PORT || process.env.PORT || 3001, 10);
-<<<<<<< HEAD
 const { recordRequest, getMetrics } = require('./metrics');
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
 
 // In-Memory store (Database-per-service pattern)
 let users = [
@@ -66,7 +63,6 @@ const server = http.createServer(async (req, res) => {
 
   console.log(`[User Service] ${m} ${p}`);
 
-<<<<<<< HEAD
   if (p === '/health' && m === 'GET') {
     recordRequest('GET', '/health', 200, 1);
     return sendJSON(res, 200, { status: 'healthy', service: 'user-service', port: PORT, timestamp: new Date().toISOString() });
@@ -82,13 +78,6 @@ const server = http.createServer(async (req, res) => {
     recordRequest('GET', '/users', 200, 1);
     return sendJSON(res, 200, users);
   }
-=======
-  if (p === '/health' && m === 'GET')
-    return sendJSON(res, 200, { status: 'healthy', service: 'user-service', port: PORT, timestamp: new Date().toISOString() });
-
-  if (p === '/users' && m === 'GET')
-    return sendJSON(res, 200, users);
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
 
   if (p === '/users' && m === 'POST') {
     try {

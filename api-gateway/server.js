@@ -1,5 +1,5 @@
 /**
- * API Gateway Microservice - CampusConnect (Web Services & SOA Lab 7)
+ * API Gateway Microservice - CampusConnect (Web Services & SOA Lab 8)
  * Single entry point for routing, logging, service discovery configuration, and centralized 502/503 error handling.
  * Default Port: 3000 (configurable via PORT environment variable)
  * Zero-dependency mode: Uses Node.js native http/https modules for maximum performance and portability.
@@ -10,12 +10,9 @@ try { require('dotenv').config(); } catch (e) { }
 const http = require('http');
 const https = require('https');
 const url = require('url');
+const { recordRequest, getMetrics } = require('./metrics');
 
 const PORT = parseInt(process.env.PORT || process.env.GATEWAY_PORT || 3000, 10);
-<<<<<<< HEAD
-const { recordRequest, getMetrics } = require('./metrics');
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
 
 /**
  * Service Discovery Registry (Configuration-Based)
@@ -87,10 +84,7 @@ function proxyRequest(req, res, targetBaseUrl, serviceName) {
 
       proxyRes.on('end', () => {
         const duration = Date.now() - startTime;
-<<<<<<< HEAD
         recordRequest(req.method, req.url, proxyRes.statusCode, duration);
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
         console.log(`[API Gateway Proxy] ${req.method} ${req.url} -> ${serviceName} | HTTP ${proxyRes.statusCode} (${duration}ms)`);
       });
     });
@@ -98,10 +92,7 @@ function proxyRequest(req, res, targetBaseUrl, serviceName) {
     // Centralized 503 Error Handling for Unreachable or Stopped Services
     proxyReq.on('error', (err) => {
       const duration = Date.now() - startTime;
-<<<<<<< HEAD
       recordRequest(req.method, req.url, 503, duration);
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
       console.error(`[API Gateway Error] Failed to proxy ${req.method} ${req.url} to ${serviceName}: ${err.message} (${duration}ms)`);
 
       if (!res.headersSent) {
@@ -158,10 +149,7 @@ const server = http.createServer((req, res) => {
 
   // Route 1: Gateway Health Check
   if (pathname === '/health' && req.method === 'GET') {
-<<<<<<< HEAD
     recordRequest('GET', '/health', 200, 1);
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
     return sendJSON(res, 200, {
       status: 'UP',
       service: 'api-gateway',
@@ -173,7 +161,6 @@ const server = http.createServer((req, res) => {
     });
   }
 
-<<<<<<< HEAD
   // Route 1b: Prometheus Metrics Exporter
   if (pathname === '/metrics' && req.method === 'GET') {
     const metricsData = getMetrics('api-gateway');
@@ -184,8 +171,6 @@ const server = http.createServer((req, res) => {
     return res.end(metricsData);
   }
 
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
   // Route 2: User Service Proxy (/users, /users/*)
   if (pathname === '/users' || pathname.startsWith('/users/')) {
     return proxyRequest(req, res, registry.userService, 'user-service');
@@ -202,19 +187,12 @@ const server = http.createServer((req, res) => {
   }
 
   // Centralized 404 Handler for Unmatched Gateway Paths
-<<<<<<< HEAD
   recordRequest(req.method, pathname, 404, 1);
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
   sendJSON(res, 404, {
     error: 'Not Found',
     statusCode: 404,
     message: `No proxy route defined on API Gateway for path: ${pathname}`,
-<<<<<<< HEAD
     validRoutes: ['/health', '/metrics', '/users', '/users/:id', '/products', '/products/:id', '/orders', '/orders/:id']
-=======
-    validRoutes: ['/health', '/users', '/users/:id', '/products', '/products/:id', '/orders', '/orders/:id']
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
   });
 });
 
@@ -227,6 +205,7 @@ server.listen(PORT, () => {
   console.log(`   - Product Service: ${registry.productService}`);
   console.log(`   - Order Service:   ${registry.orderService}`);
   console.log(` Health Check: GET http://localhost:${PORT}/health`);
+  console.log(` Metrics:      GET http://localhost:${PORT}/metrics`);
   console.log('====================================================');
 });
 

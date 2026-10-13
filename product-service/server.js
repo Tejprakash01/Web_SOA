@@ -10,10 +10,7 @@ const http = require('http');
 const url = require('url');
 
 const PORT = parseInt(process.env.PRODUCT_SERVICE_PORT || process.env.PORT || 3002, 10);
-<<<<<<< HEAD
 const { recordRequest, getMetrics } = require('./metrics');
-=======
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
 
 // In-Memory catalog (Database-per-service pattern)
 let products = [
@@ -66,7 +63,6 @@ const server = http.createServer(async (req, res) => {
 
   console.log(`[Product Service] ${m} ${p}`);
 
-<<<<<<< HEAD
   if (p === '/health' && m === 'GET') {
     recordRequest('GET', '/health', 200, 1);
     return sendJSON(res, 200, { status: 'healthy', service: 'product-service', port: PORT, timestamp: new Date().toISOString() });
@@ -82,13 +78,6 @@ const server = http.createServer(async (req, res) => {
     recordRequest('GET', '/products', 200, 1);
     return sendJSON(res, 200, products);
   }
-=======
-  if (p === '/health' && m === 'GET')
-    return sendJSON(res, 200, { status: 'healthy', service: 'product-service', port: PORT, timestamp: new Date().toISOString() });
-
-  if (p === '/products' && m === 'GET')
-    return sendJSON(res, 200, products);
->>>>>>> f50cf6311d5d6d089c3777a8915cb3cdc87906a6
 
   if (p === '/products' && m === 'POST') {
     try {
