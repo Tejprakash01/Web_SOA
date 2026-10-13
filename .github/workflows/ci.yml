@@ -1,0 +1,82 @@
+name: CampusConnect Microservices CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-lint:
+    name: Build & Test Microservices
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [api-gateway, user-service, product-service, order-service]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.service }}/package.json
+
+      - name: Install Dependencies
+        working-directory: ${{ matrix.service }}
+        run: npm ci || npm install
+
+      - name: Run Unit & Syntax Tests
+        working-directory: ${{ matrix.service }}
+        run: npm test
+
+  build-docker-images:
+    name: Build Versioned Docker Images
+    needs: test-and-lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: api-gateway
+            context: api-gateway
+            image: campusconnect/api-gateway
+          - service: user-service
+            context: user-service
+            image: campusconnect/user-service
+          - service: product-service
+            context: product-service
+            image: campusconnect/product-service
+          - service: order-service
+            context: order-service
+            image: campusconnect/order-service
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image with Versioned SHA Tag
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          push: false
+          tags: |
+            ${{ matrix.image }}:latest
+            ${{ matrix.image }}:${{ github.sha }}
+
+  validate-kubernetes:
+    name: Validate Kubernetes Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Validate Kubernetes Manifests with Dry-Run
+        run: |
+          kubectl apply --dry-run=client -f k8s/
+          kubectl apply --dry-run=client -f k8s/monitoring/

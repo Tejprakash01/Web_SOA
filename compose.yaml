@@ -1,0 +1,77 @@
+services:
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      ORDER_SERVICE_URL: http://order-service:3003
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    # Internal microservice: No host ports exposed (reachable only inside campus-network)
+    environment:
+      USER_SERVICE_PORT: 3001
+      MONGO_URI: mongodb://mongodb:27017/user_service_db
+    depends_on:
+      - mongodb
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    # Internal microservice: No host ports exposed (reachable only inside campus-network)
+    environment:
+      PRODUCT_SERVICE_PORT: 3002
+      MONGO_URI: mongodb://mongodb:27017/product_service_db
+    depends_on:
+      - mongodb
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    # Internal microservice: No host ports exposed (reachable only inside campus-network)
+    environment:
+      ORDER_SERVICE_PORT: 3003
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      INTER_SERVICE_TIMEOUT_MS: 3000
+      MONGO_URI: mongodb://mongodb:27017/order_service_db
+    depends_on:
+      - user-service
+      - product-service
+      - mongodb
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:latest
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+networks:
+  campus-network:
+    name: campus-network
+    driver: bridge

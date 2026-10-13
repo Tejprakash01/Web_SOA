@@ -1,0 +1,88 @@
+# Render Blueprint (render.yaml) for CampusConnect API Gateway & Microservices System
+# Web Services & SOA - Lab 7 Deployment Blueprint
+
+services:
+  # ----------------------------------------------------
+  # 1. API GATEWAY (Public Facing Entry Point)
+  # ----------------------------------------------------
+  - type: web
+    name: api-gateway
+    env: docker
+    dockerContext: ./api-gateway
+    dockerfilePath: ./api-gateway/Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: user-service
+          property: host
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: web
+          name: product-service
+          property: host
+      - key: ORDER_SERVICE_URL
+        fromService:
+          type: web
+          name: order-service
+          property: host
+
+  # ----------------------------------------------------
+  # 2. USER SERVICE (Microservice)
+  # ----------------------------------------------------
+  - type: web
+    name: user-service
+    env: docker
+    dockerContext: ./user-service
+    dockerfilePath: ./user-service/Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: USER_SERVICE_PORT
+        value: 10000
+
+  # ----------------------------------------------------
+  # 3. PRODUCT SERVICE (Microservice)
+  # ----------------------------------------------------
+  - type: web
+    name: product-service
+    env: docker
+    dockerContext: ./product-service
+    dockerfilePath: ./product-service/Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: PRODUCT_SERVICE_PORT
+        value: 10000
+
+  # ----------------------------------------------------
+  # 4. ORDER SERVICE (Microservice)
+  # ----------------------------------------------------
+  - type: web
+    name: order-service
+    env: docker
+    dockerContext: ./order-service
+    dockerfilePath: ./order-service/Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: ORDER_SERVICE_PORT
+        value: 10000
+      - key: USER_SERVICE_URL
+        fromService:
+          type: web
+          name: user-service
+          property: host
+      - key: PRODUCT_SERVICE_URL
+        fromService:
+          type: web
+          name: product-service
+          property: host
+      - key: INTER_SERVICE_TIMEOUT_MS
+        value: 5000
+
+
