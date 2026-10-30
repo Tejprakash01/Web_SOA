@@ -1,0 +1,15 @@
+{
+  "name": "ai-service",
+  "version": "1.0.0",
+  "description": "CampusConnect Generative AI Microservice - Web Services & SOA Lab 9",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --check server.js metrics.js src/schemas/ai.schema.js src/services/ai.service.js src/routes/ai.routes.js && echo 'Tests passed'"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
+

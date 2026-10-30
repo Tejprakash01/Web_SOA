@@ -1,6 +1,6 @@
 /**
- * Local Multi-Service Process Manager - CampusConnect Lab 7
- * Spawns API Gateway, User Service, Product Service, and Order Service concurrently.
+ * Local Multi-Service Process Manager - CampusConnect Lab 9
+ * Spawns API Gateway, User Service, Product Service, Order Service, and AI Service concurrently.
  * Run with: node start-all.js
  */
 
@@ -11,11 +11,12 @@ const services = [
   { name: 'API Gateway',     dir: 'api-gateway',     script: 'server.js', port: 3000 },
   { name: 'User Service',    dir: 'user-service',    script: 'server.js', port: 3001 },
   { name: 'Product Service', dir: 'product-service', script: 'server.js', port: 3002 },
-  { name: 'Order Service',   dir: 'order-service',   script: 'server.js', port: 3003 }
+  { name: 'Order Service',   dir: 'order-service',   script: 'server.js', port: 3003 },
+  { name: 'AI Service',      dir: 'ai-service',      script: 'server.js', port: 3004 }
 ];
 
 console.log('===========================================================');
-console.log(' Starting CampusConnect Microservices System (Lab 7)');
+console.log(' Starting CampusConnect Microservices System (Lab 9)');
 console.log('===========================================================');
 
 const processes = [];

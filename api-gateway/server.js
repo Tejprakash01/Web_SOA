@@ -30,7 +30,8 @@ function getServiceRegistry() {
   return {
     userService: normalizeUrl(process.env.USER_SERVICE_URL, 'http://localhost:3001'),
     productService: normalizeUrl(process.env.PRODUCT_SERVICE_URL, 'http://localhost:3002'),
-    orderService: normalizeUrl(process.env.ORDER_SERVICE_URL, 'http://localhost:3003')
+    orderService: normalizeUrl(process.env.ORDER_SERVICE_URL, 'http://localhost:3003'),
+    aiService: normalizeUrl(process.env.AI_SERVICE_URL, 'http://localhost:3004')
   };
 }
 
@@ -186,13 +187,30 @@ const server = http.createServer((req, res) => {
     return proxyRequest(req, res, registry.orderService, 'order-service');
   }
 
+  // Route 5: AI Service Proxy (/api/ai, /api/ai/*)
+  if (pathname === '/api/ai' || pathname.startsWith('/api/ai/')) {
+    return proxyRequest(req, res, registry.aiService, 'ai-service');
+  }
+
   // Centralized 404 Handler for Unmatched Gateway Paths
   recordRequest(req.method, pathname, 404, 1);
   sendJSON(res, 404, {
     error: 'Not Found',
     statusCode: 404,
     message: `No proxy route defined on API Gateway for path: ${pathname}`,
-    validRoutes: ['/health', '/metrics', '/users', '/users/:id', '/products', '/products/:id', '/orders', '/orders/:id']
+    validRoutes: [
+      '/health',
+      '/metrics',
+      '/users',
+      '/users/:id',
+      '/products',
+      '/products/:id',
+      '/orders',
+      '/orders/:id',
+      '/api/ai/generate',
+      '/api/ai/health',
+      '/api/ai/config'
+    ]
   });
 });
 
@@ -204,6 +222,7 @@ server.listen(PORT, () => {
   console.log(`   - User Service:    ${registry.userService}`);
   console.log(`   - Product Service: ${registry.productService}`);
   console.log(`   - Order Service:   ${registry.orderService}`);
+  console.log(`   - AI Service:      ${registry.aiService}`);
   console.log(` Health Check: GET http://localhost:${PORT}/health`);
   console.log(` Metrics:      GET http://localhost:${PORT}/metrics`);
   console.log('====================================================');

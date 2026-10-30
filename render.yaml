@@ -30,6 +30,11 @@ services:
           type: web
           name: order-service
           property: host
+      - key: AI_SERVICE_URL
+        fromService:
+          type: web
+          name: ai-service
+          property: host
 
   # ----------------------------------------------------
   # 2. USER SERVICE (Microservice)
@@ -84,5 +89,30 @@ services:
           property: host
       - key: INTER_SERVICE_TIMEOUT_MS
         value: 5000
+
+  # ----------------------------------------------------
+  # 5. AI SERVICE (Generative AI Microservice - Lab 9)
+  # ----------------------------------------------------
+  - type: web
+    name: ai-service
+    env: docker
+    dockerContext: ./ai-service
+    dockerfilePath: ./ai-service/Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: AI_SERVICE_PORT
+        value: 10000
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_MODEL
+        value: gemini-1.5-flash
+      - key: AI_TIMEOUT_MS
+        value: 30000
+      - key: MAX_INPUT_CHARS
+        value: 5000
+      - key: AI_API_KEY
+        sync: false
+
 
 

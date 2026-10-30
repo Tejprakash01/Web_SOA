@@ -10,10 +10,12 @@ services:
       USER_SERVICE_URL: http://user-service:3001
       PRODUCT_SERVICE_URL: http://product-service:3002
       ORDER_SERVICE_URL: http://order-service:3003
+      AI_SERVICE_URL: http://ai-service:3004
     depends_on:
       - user-service
       - product-service
       - order-service
+      - ai-service
     networks:
       - campus-network
     restart: unless-stopped
@@ -61,6 +63,22 @@ services:
       - user-service
       - product-service
       - mongodb
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    # Internal microservice: Reachable via Gateway or internal network
+    environment:
+      AI_SERVICE_PORT: 3004
+      AI_PROVIDER: ${AI_PROVIDER:-gemini}
+      AI_API_KEY: ${AI_API_KEY}
+      AI_MODEL: ${AI_MODEL:-gemini-1.5-flash}
+      AI_TIMEOUT_MS: ${AI_TIMEOUT_MS:-30000}
+      MAX_INPUT_CHARS: ${MAX_INPUT_CHARS:-5000}
     networks:
       - campus-network
     restart: unless-stopped

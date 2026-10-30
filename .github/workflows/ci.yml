@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [api-gateway, user-service, product-service, order-service]
+        service: [api-gateway, user-service, product-service, order-service, ai-service]
 
     steps:
       - name: Checkout Repository
@@ -52,6 +52,9 @@ jobs:
           - service: order-service
             context: order-service
             image: campusconnect/order-service
+          - service: ai-service
+            context: ai-service
+            image: campusconnect/ai-service
 
     steps:
       - name: Checkout Repository
